@@ -7,12 +7,14 @@ the applications do not need to support all kinds of hardware. As a consequence
 edraw is designed to be compiled for a single kind of output devices.
 
 Features:
+
 * Cairo-like library interface
 * High efficency by a simple desgin
 * Support for grayscale displays including color translation
 * Small and modular codebase
 
 Planned features:
+
 * Bezier curve support
 * Xlib backend for debugging
 * Truecolor framebuffer backend
@@ -31,6 +33,7 @@ library archive you can link your programs against.
 
 ### Dependencys ###
 The only dependency is a libc implementation. It is successfully tested with
+
 * glibc
 * dietlibc
 
@@ -40,6 +43,7 @@ CC: The C compiler to use
 HOST: Prefix for all build commands (use it for cross compiling)
 
 DEBUG: Set the debug level
+
 * fatal -> print error messages on fatal errors, then exit
 * warn -> additionally print warnings
 * debug -> show debug messages (for development)
