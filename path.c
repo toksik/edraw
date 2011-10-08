@@ -163,7 +163,7 @@ int edraw_stroke(edraw_surface *sr)
         for (y = MIN(op->y, op->y2); y < max; y ++)
           edraw_dot(sr, ((op->gradient * y) / 1000) + op->start, y);
         edraw_mark_dirty(sr, MIN(op->x, op->x2), MIN(op->y, op->y2),
-            DELTA(op->x, op->x2), DELTA(op->y, op->y2)+1);
+            MAX(op->x, op->x2)+1, MAX(op->y, op->y2)+1);
       }
       else
       {
@@ -171,7 +171,7 @@ int edraw_stroke(edraw_surface *sr)
         for (x = MIN(op->x, op->x2); x < max; x ++)
           edraw_dot(sr, x, ((op->gradient * x) / 1000) + op->start);
         edraw_mark_dirty(sr, MIN(op->x, op->x2), MIN(op->y, op->y2),
-            DELTA(op->x, op->x2), DELTA(op->y, op->y2)+1);
+            MAX(op->x, op->x2)+1, MAX(op->y, op->y2)+1);
       }
     else if (op->type == EDRAW_RECTANGLE)
     {
