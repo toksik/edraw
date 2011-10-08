@@ -196,6 +196,27 @@ int edraw_copy(edraw_surface *target, edraw_surface *src, int x1, int y1,
 #endif
 #endif
 
+#ifndef __EDRAW_HAS_CLEAR
+#define __EDRAW_HAS_CLEAR
+int edraw_clear(edraw_surface *sr)
+{
+  edraw_called("edraw_clear");
+  int x, y, width, height;
+  if (~sr->flags & EDRAW_READY)
+  {
+    edraw_fatal("edraw_clear", "Surface not ready");
+    return(EDRAW_SURFACE);
+  }
+  width = sr->state->clip_x + sr->state->clip_width;
+  height = sr->state->clip_y + sr->state->clip_height;
+  for (y = sr->state->clip_y; y < height; y++)
+    for (x = sr->state->clip_x; x < width; x++)
+      edraw_dot(sr, x, y);
+  edraw_mark_dirty(sr, sr->state->clip_x, sr->state->clip_y, width, height);
+  return(EDRAW_SUCCESS);
+}
+#endif
+
 #ifndef __EDRAW_HAS_BLANK
 #define __EDRAW_HAS_BLANK
 int edraw_blank(edraw_surface *sr)
