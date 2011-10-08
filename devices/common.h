@@ -196,6 +196,80 @@ int edraw_copy(edraw_surface *target, edraw_surface *src, int x1, int y1,
 #endif
 #endif
 
+#ifndef __EDRAW_HAS_CLEAR
+#define __EDRAW_HAS_CLEAR
+#if (EDRAW_COLOR == EDRAW_GRAY4)
+int edraw_clear(edraw_surface *sr)
+{
+  char value;
+  int linelen, offset, x, y, width;
+  int mod_start, mod_end;
+  edraw_called("edraw_clear");
+  if (~sr->flags & EDRAW_READY)
+  {
+    edraw_fatal("edraw_clear", "Surface not ready");
+    return(-EDRAW_SURFACE);
+  }
+  linelen = sr->width >> 1;
+  if (sr->width % 2)
+    linelen ++;
+  value = (sr->state->gs & 0b00001111) | ((sr->state->gs << 4) & 0b11110000);
+  if ((sr->state->clip_x == 0) && (sr->state->clip_y == 0) &&
+      (sr->state->clip_width == sr->width) &&
+      (sr->state->clip_height == sr->height))
+  {
+    memset(sr->ptr, value, linelen * sr->height);
+    edraw_mark_dirty(sr, sr->state->clip_x, sr->state->clip_y,
+        sr->state->clip_x + sr->state->clip_width,
+        sr->state->clip_y + sr->state->clip_height);
+    return(EDRAW_SUCCESS);
+  }
+  width = sr->state->clip_width;
+  offset = (linelen * sr->state->clip_y) + (sr->state->clip_x >> 1);
+  mod_start = sr->state->clip_x % 2;
+  if (mod_start)
+  {
+    width --;
+    offset ++;
+  }
+  mod_end = width % 2;
+  width = width >> 1;
+  for (y = 0; y < sr->state->clip_height; y ++)
+  {
+    if (mod_start)
+      sr->ptr[offset] = (sr->ptr[offset] & 0b11110000) | (value & 0b00001111);
+    for (x = 0; x < width; x ++)
+      sr->ptr[offset + x] = value;
+    if (mod_end)
+      sr->ptr[offset] = (value & 0b11110000) | (sr->ptr[offset] & 0b00001111);
+    offset += linelen;
+  }
+  edraw_mark_dirty(sr, sr->state->clip_x, sr->state->clip_y,
+      sr->state->clip_x + sr->state->clip_width,
+      sr->state->clip_y + sr->state->clip_height);
+  return(EDRAW_SUCCESS);
+}
+#else
+int edraw_clear(edraw_surface *sr)
+{
+  edraw_called("edraw_clear");
+  int x, y, width, height;
+  if (~sr->flags & EDRAW_READY)
+  {
+    edraw_fatal("edraw_clear", "Surface not ready");
+    return(-EDRAW_SURFACE);
+  }
+  width = sr->state->clip_x + sr->state->clip_width;
+  height = sr->state->clip_y + sr->state->clip_height;
+  for (y = sr->state->clip_y; y < height; y++)
+    for (x = sr->state->clip_x; x < width; x++)
+      edraw_dot(sr, x, y);
+  edraw_mark_dirty(sr, sr->state->clip_x, sr->state->clip_y, width, height);
+  return(EDRAW_SUCCESS);
+}
+#endif
+#endif
+
 #ifndef __EDRAW_HAS_BLANK
 #define __EDRAW_HAS_BLANK
 int edraw_blank(edraw_surface *sr)

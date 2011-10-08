@@ -184,24 +184,6 @@ void edraw_mark_dirty(edraw_surface *sr, int x1, int y1, int x2, int y2)
   }
 }
 
-int edraw_clear(edraw_surface *sr)
-{
-  edraw_called("edraw_clear");
-  int x, y, width, height;
-  if (~sr->flags & EDRAW_READY)
-  {
-    edraw_fatal("edraw_clear", "Surface not ready");
-    return(EDRAW_SURFACE);
-  }
-  width = sr->state->clip_x + sr->state->clip_width;
-  height = sr->state->clip_y + sr->state->clip_height;
-  for (y = sr->state->clip_y; y < height; y++)
-    for (x = sr->state->clip_x; x < width; x++)
-      edraw_dot(sr, x, y);
-  edraw_mark_dirty(sr, sr->state->clip_x, sr->state->clip_y, width, height);
-  return(EDRAW_SUCCESS);
-}
-
 int edraw_save(edraw_surface *sr)
 {
   edraw_called("edraw_save");
