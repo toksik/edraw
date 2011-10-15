@@ -137,10 +137,21 @@ int edraw_clip(edraw_surface *sr, int x, int y, unsigned int width,
     unsigned int height)
 {
   edraw_called("edraw_clip");
+  int x2, y2;
   if (~sr->flags & EDRAW_READY)
   {
     edraw_fatal("edraw_clip", "Surface not ready");
     return(EDRAW_SURFACE);
+  }
+  if (sr->state->prev != NULL)
+  {
+    x2 = x + width;
+    y2 = y + height;
+    x = MAX(x, sr->state->prev->clip_x);
+    y = MAX(y, sr->state->prev->clip_y);
+    width = MIN(x2, sr->state->prev->clip_x + sr->state->prev->clip_width) - x;
+    height = MIN(y2, sr->state->prev->clip_y + sr->state->prev->clip_height) -
+      y;
   }
   if (x < 0)
     sr->state->clip_x = 0;
