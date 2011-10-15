@@ -231,6 +231,11 @@ int edraw_restore(edraw_surface *sr)
     edraw_fatal("edraw_restore", "Surface not ready");
     return(-EDRAW_SURFACE);
   }
+  if (sr->state->prev == NULL)
+  {
+    edraw_debug("edraw_restore", "No saved state");
+    return(EDRAW_NOOP);
+  }
   state = sr->state;
   sr->state = state->prev;
   sr->state->upd_x1 = state->upd_x1;
