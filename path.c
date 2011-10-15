@@ -185,7 +185,8 @@ int edraw_stroke(edraw_surface *sr)
        edraw_dot(sr, op->x, y);
        edraw_dot(sr, op->x + op->width, y);
      }
-     edraw_mark_dirty(sr, op->x, op->y, op->x + op->width, op->y + op->height);
+     edraw_mark_dirty(sr, op->x, op->y, op->x + op->width + 1,
+         op->y + op->height + 1);
     }
     else
       edraw_debug("edraw_stroke", "Unknown operation");
